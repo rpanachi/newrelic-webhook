@@ -13,27 +13,25 @@ require './deployment'
 require './alert'
 require './zenvia'
 
-# get '/' do
-#   @deployments = Deployment.order(:created_at.desc)
-#   @alerts = Alert.order(:created_at.desc)
-#   erb :index
-# end
-
 def json
   @json ||= (JSON.parse(request.body.read) rescue nil)
 end
 
 def process_alert
   if json['severity']
+    puts "Alert received: #{json}"
     alert = Alert.new(json)
     alert.save
+    alert
   end
 end
 
 def process_deployment
   if json['revision']
+    puts "Deployment received: #{json}"
     deployment = Deployment.new(json)
     deployment.save
+    deploymeny
   end
 end
 
@@ -57,4 +55,18 @@ post '/sms' do
   end
 
   status 200
+end
+
+get '/' do
+  app_key = ENV['APP_KEY']
+  puts("APP_KEY not defined, returning empty logs") unless app_key
+
+  if params[:key] == app_key
+    @deployments = Deployment.order(:created_at.desc).limit(10)
+    @alerts = Alert.order(:created_at.desc).limit(10)
+    erb :index
+  else
+    puts("Invalid app_key: #{params[:key]}, return empty logs")
+    status 200
+  end
 end

@@ -1,14 +1,20 @@
-<h1>New Relic Deployments</h1>
-<% @deployments.each do |deployment| %>
-<div class="hero-unit">
-  <h2>Deployment of <%= deployment.application_name %> at <%= deployment.created_at %></h2>
-  <p><a href="<%= deployment.deployment_url %>">View deployment</a></p>
-</div>
+<% if @deployments.any? %>
+  <h1>New Relic Deployments</h1>
+  <% @deployments.each do |deployment| %>
+    <div class="hero-unit">
+    <h3>Deployment of <%= deployment.application_name %> at <%= deployment.created_at %></h3>
+    <p><a href="<%= deployment.deployment_url %>">View deployment</a></p>
+  </div>
+  <% end %>
 <% end %>
-<h1>New Relic Alerts</h1>
-<% @alerts.each do |alert| %>
-<div class="hero-unit">
-  <h2><%= alert.message %></h2>
-  <p><%= alert.long_description %></p>
-</div>
+<% if @alerts.any? %>
+  <h1>New Relic Alerts</h1>
+  <% @alerts.each do |alert| %>
+    <div>
+    <h3><%= alert.severity.upcase %> of <%= alert.application_name %> at <%= alert.created_at %></h3>
+    <p><%= alert.message %> <%= alert.long_description %></p>
+    <p><a href="<%= alert.alert_url %>">View alert</a></p>
+  </div>
+  <hr/>
+  <% end %>
 <% end %>
