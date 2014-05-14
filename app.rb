@@ -5,7 +5,7 @@ require 'json'
 
 configure do
   set :public_folder, Proc.new { File.join(root, "static") }
-  set :database, ENV['HEROKU_POSTGRESQL_GREEN_URL'] || ENV['DATABASE'] || 'mysql2://root@localhost:3306/newrelic_webhook_zenvia'
+  set :database, ENV['DATABASE_URL'] || 'mysql2://root@localhost:3306/newrelic_webhook_zenvia'
   DB = Sequel.connect(settings.database)
 end
 
