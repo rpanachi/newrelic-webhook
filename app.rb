@@ -19,21 +19,41 @@ require './zenvia'
 #   erb :index
 # end
 
-post '/webhook' do
-  body = request.body.read
-  json = JSON.parse(body)
+def json
+  @json ||= (JSON.parse(request.body.read) rescue nil)
+end
 
+def process_alert
   if json['severity']
     alert = Alert.new(json)
     alert.save
-
-    zenvia = Zenvia.new(alert)
-    zenvia.deliver
   end
+end
 
+def process_deployment
   if json['revision']
     deployment = Deployment.new(json)
     deployment.save
+  end
+end
+
+post '/webhook' do
+  process_alert
+  process_deployment
+
+  status 200
+end
+
+post '/deploy' do
+  process_deployment
+
+  status 200
+end
+
+post '/sms' do
+  if (alert = process_alert)
+    zenvia = Zenvia.new(alert)
+    zenvia.deliver
   end
 
   status 200
