@@ -11,12 +11,13 @@ end
 
 require './deployment'
 require './alert'
+require './zenvia'
 
-get '/' do
-  @deployments = Deployment.order(:created_at.desc)
-  @alerts = Alert.order(:created_at.desc)
-  erb :index
-end
+# get '/' do
+#   @deployments = Deployment.order(:created_at.desc)
+#   @alerts = Alert.order(:created_at.desc)
+#   erb :index
+# end
 
 post '/webhook' do
   body = request.body.read
@@ -25,6 +26,9 @@ post '/webhook' do
   if json['severity']
     alert = Alert.new(json)
     alert.save
+
+    zenvia = Zenvia.new(alert)
+    zenvia.deliver
   end
 
   if json['revision']
