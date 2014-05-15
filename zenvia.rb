@@ -2,14 +2,15 @@ require "net/http"
 
 class Zenvia
 
-  attr_reader :alert
+  attr_reader :alert, :payload
 
   def initialize(alert)
     @alert = alert
+    @payload = alert.payload
   end
 
   def deliver
-    message = "#{alert.severity.upcase} #{alert.application_name}: #{alert.long_description}"
+    message = "#{payload['severity'].to_s.upcase} #{payload['application_name']}: #{payload['long_description']}"
     receipts.each { |number| post_to_zenvia(number, message) }
   end
 
