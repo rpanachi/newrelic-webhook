@@ -16,7 +16,7 @@ def json
   @json ||= begin
               puts "Params: #{params.inspect}"
               if params['alert']
-                params['alert']
+                JSON.parse(params['alert'])
               else
                 body = request.body.read
                 puts "Payload: #{body}"
