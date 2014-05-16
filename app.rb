@@ -13,7 +13,13 @@ require './alert'
 require './zenvia'
 
 def json
-  @json ||= (JSON.parse(request.body.read) rescue nil)
+  @json ||= begin
+              body = request.body.read
+              puts "Received payload: #{body}"
+              JSON.parse(body)
+            rescue Exception => ex
+              puts "Invalid body: #{ex.inspect}"
+            end
 end
 
 def process_alert
@@ -26,12 +32,14 @@ def process_alert
 end
 
 post '/webhook' do
+  puts "Params: #{params.inspect}"
   process_alert
 
   status 200
 end
 
 post '/sms' do
+  puts "Params: #{params.inspect}"
   if (alert = process_alert)
     zenvia = Zenvia.new(alert)
     zenvia.deliver
