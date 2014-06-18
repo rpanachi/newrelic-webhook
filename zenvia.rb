@@ -10,7 +10,7 @@ class Zenvia
   end
 
   def deliver
-    message = "#{payload['severity'].to_s.upcase} #{payload['short_description']}: #{payload['long_description']}"
+    message = "#{payload['severity'].to_s.upcase} #{payload['long_description']}"
     receipts.each { |number| post_to_zenvia(number, message) }
   end
 
